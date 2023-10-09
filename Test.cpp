@@ -10,7 +10,7 @@
 
 
 
-//Base hook by iraizo on github: https://github.com/iraizo/nvidia-overlay-hijack
+//Base by iraizo on github: https://github.com/iraizo/nvidia-overlay-hijack
 
 
 
