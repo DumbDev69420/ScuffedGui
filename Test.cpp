@@ -33,7 +33,9 @@ int main()
     bool DifText = false;
     bool Open = false;
 
-
+    //Example stuff (doesnt need to be included just to show how to use the stuff)
+    bool TestBool = false;
+    float FloatValue = 10.0f;
     
 
 
@@ -48,14 +50,16 @@ int main()
         overlay->begin_scene();
         overlay->clear_scene();
         if (Open == true) {
-            
+            //Every Item will return an Boolean value 
+            //Example stuff:
             overlay->DrawMenu(D2D1::ColorF(D2D1::ColorF::Blue)); {
                 if (overlay->Button("Exit  ")) {
                     overlay->Quit = true;
                 }
-
+                overlay->Checkbox("Checkbox", &TestBool); 
+                overlay->SliderFloat("SliderFloat", &FloatValue, 10.0f, 200.0f);
             }
-
+              
 
             
             
