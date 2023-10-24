@@ -95,7 +95,7 @@ public:
     /* create helper functions here */
     void draw_text(int x, int y, const char* text, D2D1::ColorF color, ...);
     void DrawMenu(D2D1::ColorF color);
-    bool AddItem(D2D1_RECT_F Rect, const char* id);
+    bool AddItem(D2D1_RECT_F Rect, const char* id, bool IgnoreList = false);
     bool Button(const char* Name);
     void ButtonBehaviour(bool* Pressed, bool* hovered, const char* id);
     bool CheckBox(const char* Name, bool *Value);
