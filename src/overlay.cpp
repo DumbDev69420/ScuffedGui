@@ -614,3 +614,13 @@ Overlay* PtrToOverlay = 0x0;
 
             return Pressed;
         }
+
+
+        void Overlay::Spacing() {
+
+            D2D_RECT_F RectButton{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+            if (AddItem(RectButton, "EMPTY", true)) {
+                return;
+            }
+        }
