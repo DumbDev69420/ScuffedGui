@@ -56,7 +56,7 @@ private:
     int NumbCurrentItem = 0;
     DeVec2 WindowPos = { 500,500 };
 
-    const char* MainMenuText = "Asphalt 8 Cheeto";
+    const char* MainMenuText = "Template";
 
     const int MainMenuTextLenght = strnlen_s(MainMenuText, 100);
 
@@ -94,7 +94,7 @@ public:
 
     /* create helper functions here */
     void draw_text(int x, int y, const char* text, D2D1::ColorF color, ...);
-    void DrawMenu(D2D1::ColorF color);
+    void DrawMenu(D2D1::ColorF colorInner, D2D1::ColorF Outside);
     bool AddItem(D2D1_RECT_F Rect, const char* id, bool IgnoreList = false);
     bool Button(const char* Name);
     void ButtonBehaviour(bool* Pressed, bool* hovered, const char* id);
