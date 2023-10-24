@@ -100,5 +100,6 @@ public:
     void ButtonBehaviour(bool* Pressed, bool* hovered, const char* id);
     bool CheckBox(const char* Name, bool *Value);
     bool SliderFloat(const char* Name, float* Value, float min, float max);
+    void Spacing();
     //LPMSG GetMessagesC();
 };
