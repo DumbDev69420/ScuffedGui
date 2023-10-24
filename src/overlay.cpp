@@ -292,7 +292,13 @@ Overlay* PtrToOverlay = 0x0;
         }
 
 
-        bool Overlay::AddItem(D2D1_RECT_F Rect, const char* id) {
+        bool Overlay::AddItem(D2D1_RECT_F Rect, const char* id, bool IgnoreList) {
+
+            if (IgnoreList) {
+                Item New{ id, ItemCount, Rect };
+                ItemList.push_back(New);
+                ItemCount++;
+            }
 
             for (size_t i = 0; i < ItemList.size(); i++)
             {
