@@ -33,6 +33,7 @@ public:
     bool Quit = false;
     bool LockWindow = false;
     int Menu = 0;
+    int SpacingAmount = 0;
     tagPOINT MousePosF = { 0, 0 };
 
 private:
@@ -52,6 +53,7 @@ private:
     float WindowWidht = 600;
     float WindowHeight = 420;
 
+    int DelayForward = 0;
     int ItemCountGlobal = 0;
     int ItemCount = 0;
     int NumbCurrentItem = 0;
