@@ -14,4 +14,4 @@ How to adept the code to your Project: Go into overlay.cpp and change the code f
 
 
 # Your Part:
-You are welcomed to look at my code and fix stuff if you see stuff or add stuff and more functionality, stability and fix performance related stuff. Or not its your Decision :)
+You are welcomed to look at my code and fix stuff if you see stuff or add stuff and more functionality, stability and fix performance related stuff. Im a Student that doesnt have much time on his Hand, so i would be very happy if you take part in our Project
