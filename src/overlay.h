@@ -38,12 +38,12 @@ public:
 private:
     HWND window;
 
-    ID2D1Factory*          d2d_factory;
+    ID2D1Factory* d2d_factory;
     ID2D1HwndRenderTarget* tar;
-    IDWriteFactory*        write_factory;
-    ID2D1SolidColorBrush*  brush;
-    IDWriteTextFormat*     format;
-    IDWriteTextFormat*     formatOther;
+    IDWriteFactory* write_factory;
+    ID2D1SolidColorBrush* brush;
+    IDWriteTextFormat* format;
+    IDWriteTextFormat* formatOther;
 
     const wchar_t* font;
     float          size;
@@ -52,6 +52,7 @@ private:
     float WindowWidht = 600;
     float WindowHeight = 420;
 
+    int ItemCountGlobal = 0;
     int ItemCount = 0;
     int NumbCurrentItem = 0;
     DeVec2 WindowPos = { 500,500 };
@@ -98,7 +99,7 @@ public:
     bool AddItem(D2D1_RECT_F Rect, const char* id, bool IgnoreList = false);
     bool Button(const char* Name);
     void ButtonBehaviour(bool* Pressed, bool* hovered, const char* id);
-    bool CheckBox(const char* Name, bool *Value);
+    bool CheckBox(const char* Name, bool* Value);
     bool SliderFloat(const char* Name, float* Value, float min, float max);
     void Spacing();
     //LPMSG GetMessagesC();
