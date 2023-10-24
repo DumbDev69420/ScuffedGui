@@ -2,7 +2,7 @@
 ScuffedGui is an Graphical User Interface for D2D1 running on External Key Input Detections.
 
 
-Functionality: Checkboxes, Buttons, Sliderfloat (working kinda for now), an Menu which can be moved around with    i for left,  u for right, O = Down, P = Up
+Functionality: Checkboxes, Buttons, Sliderfloat (working kinda for now), Spacing, an Menu which can be moved around with    i for left,  u for right, O = Down, P = Up
 
 
 # Test file:
