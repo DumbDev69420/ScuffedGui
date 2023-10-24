@@ -213,7 +213,7 @@ Overlay* PtrToOverlay = 0x0;
         bool InAreaOfButton(const Item& item);
 
 
-        void Overlay::DrawMenu(D2D1::ColorF color) {
+        void Overlay::DrawMenu(D2D1::ColorF colorInner, D2D1::ColorF Outside) {
 
             RECT    window_metrics;
 
@@ -277,11 +277,12 @@ Overlay* PtrToOverlay = 0x0;
 
 
 
-            brush->SetColor(color);
+            brush->SetColor(colorInner);
 
             tar->FillRoundedRectangle(RoundedRect, brush);
 
-            brush->SetColor(D2D1::ColorF(D2D1::ColorF::DarkBlue));
+
+            brush->SetColor(Outside);
             tar->FillRoundedRectangle(RoundedRectFF, brush);
 
 
