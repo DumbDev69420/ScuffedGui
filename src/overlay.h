@@ -36,6 +36,21 @@ public:
     int SpacingAmount = 0;
     tagPOINT MousePosF = { 0, 0 };
 
+
+    //Colors
+
+
+
+
+    //Menu Colors
+    D3DCOLORVALUE MenuInnerColor = { 0.05882352941, 0.07843137254, 0.19215686274, 1 };
+    D3DCOLORVALUE MenuOuterColor = { 0.09411764705, 0.11372549019, 0.23137254901, 1 };
+
+    //Colors Button
+    D3DCOLORVALUE InnerColor = { 54 / 255.0f, 119 / 255.0f, 175 / 255.0f, 255 / 255.0f };
+    D3DCOLORVALUE Outercolor = { 38 / 255.0f, 54 / 255.0f, 88 / 255.0f, 255 / 255.0f };
+    
+
 private:
     HWND window;
 
@@ -96,13 +111,14 @@ public:
     void clear_scene();
 
     /* create helper functions here */
-    void draw_text(int x, int y, const char* text, D2D1::ColorF color, ...);
-    void DrawMenu(D2D1::ColorF colorInner, D2D1::ColorF Outside);
+    void draw_text(int x, int y, const char* text, D3DCOLORVALUE color, ...);
+    void DrawMenu();
     bool AddItem(D2D1_RECT_F Rect, const char* id, bool IgnoreList = false);
     bool Button(const char* Name);
     void ButtonBehaviour(bool* Pressed, bool* hovered, const char* id);
     bool CheckBox(const char* Name, bool* Value);
     bool SliderFloat(const char* Name, float* Value, float min, float max);
     void Spacing();
+    void DrawWaterMark();
     //LPMSG GetMessagesC();
 };
