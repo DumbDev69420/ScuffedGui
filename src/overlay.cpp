@@ -15,6 +15,8 @@ namespace NeededFuncs {
     }
 
 
+    
+
     typedef struct
     {
         DWORD R;
@@ -24,7 +26,20 @@ namespace NeededFuncs {
     }RGBA;
 
 
+    D3DCOLORVALUE ConvertRGBAToD3DCOLORVALUE(const RGBA& rgba)
+    {
+        D3DCOLORVALUE color;
+        color.r = rgba.R / 255.0f;
+        color.g = rgba.G / 255.0f;
+        color.b = rgba.B / 255.0f;
+        color.a = rgba.A / 255.0f;
+        return color;
+    }
+
+
     RGBA DefaultColRgba;
+    RGBA Rainbowshit = {0, 0,0,255};
+    D3DCOLORVALUE RainbowTextColor;
 
 
     int Rainbowify(RGBA* Color) {
@@ -167,7 +182,7 @@ void Overlay::clear_scene()
 
 bool FormatOthers = false;
 
-void Overlay::draw_text(int x, int y, const char* text, D2D1::ColorF color, ...)
+void Overlay::draw_text(int x, int y, const char* text, D3DCOLORVALUE color, ...)
 {
 
     char    buffer[4096];
@@ -211,10 +226,14 @@ void Overlay::draw_text(int x, int y, const char* text, D2D1::ColorF color, ...)
 
 }
 
+
 bool InAreaOfButton(const Item& item);
 
 
-void Overlay::DrawMenu(D2D1::ColorF colorInner, D2D1::ColorF Outside) {
+constexpr int WindowThickness = 5;
+
+void Overlay::DrawMenu() {
+
 
     RECT    window_metrics;
 
@@ -222,6 +241,8 @@ void Overlay::DrawMenu(D2D1::ColorF colorInner, D2D1::ColorF Outside) {
         return;
 
     PtrToOverlay = this;
+
+   
 
 
 
@@ -234,15 +255,15 @@ void Overlay::DrawMenu(D2D1::ColorF colorInner, D2D1::ColorF Outside) {
 
     D2D1_RECT_F Rect{ x, y, x + WindowWidht, y - WindowHeight };
 
-    D2D1_ROUNDED_RECT RoundedRect = { Rect, 10.0f, 10.0f };
+    D2D1_ROUNDED_RECT RoundedRect = { Rect, 2.0f, 2.0f };
 
 
     D2D1_ROUNDED_RECT RoundedRectFF = RoundedRect;
 
-    RoundedRectFF.rect.right -= 10;
-    RoundedRectFF.rect.bottom += 10;
-    RoundedRectFF.rect.top -= 10;
-    RoundedRectFF.rect.left += 10;
+    RoundedRectFF.rect.right -= WindowThickness;
+    RoundedRectFF.rect.bottom += WindowThickness;
+    RoundedRectFF.rect.top -= WindowThickness;
+    RoundedRectFF.rect.left += WindowThickness;
 
 
 
@@ -278,19 +299,31 @@ void Overlay::DrawMenu(D2D1::ColorF colorInner, D2D1::ColorF Outside) {
 
 
 
-    brush->SetColor(colorInner);
-
+    brush->SetColor(MenuInnerColor);
+    
     tar->FillRoundedRectangle(RoundedRect, brush);
 
 
-    brush->SetColor(Outside);
-    tar->FillRoundedRectangle(RoundedRectFF, brush);
+    brush->SetColor(MenuOuterColor);
+    tar->FillRectangle(RoundedRectFF.rect, brush);
 
 
 
 
 
-    draw_text(Rect.left + WindowWidht / 2 - MainMenuTextLenght * 6, Rect.bottom + 10, MainMenuText, D2D1::ColorF(D2D1::ColorF::Green));
+    draw_text(Rect.left + WindowWidht / 2 - MainMenuTextLenght * 6, Rect.bottom + 10, MainMenuText, D2D1::ColorF(D2D1::ColorF::White));
+}
+
+
+
+void Overlay::DrawWaterMark() {
+
+    NeededFuncs::Rainbowify(&NeededFuncs::Rainbowshit);
+
+    NeededFuncs::RainbowTextColor = NeededFuncs::ConvertRGBAToD3DCOLORVALUE(NeededFuncs::Rainbowshit);
+
+
+    draw_text(10, 10, "ScuffedGUI Made by Senpai42", NeededFuncs::RainbowTextColor);
 }
 
 
@@ -357,7 +390,7 @@ bool InAreaOfButton(const Item& item) { //Check if Mouse is in the Area of the R
         (distanceY <= (item.Pos.bottom - item.Pos.top) / 2);
 }
 
-
+bool Slider = false;
 
 //Behaviour stuff like if pressed or hovered
 void Overlay::ButtonBehaviour(bool* Pressed, bool* hovered, const char* id) {
@@ -379,26 +412,32 @@ void Overlay::ButtonBehaviour(bool* Pressed, bool* hovered, const char* id) {
 
 
     if (Found) {
-        if (GetAsyncKeyState(VK_LBUTTON) && GetTickCount64() > ItemList[NumbCurrentItem].TickCount) {
+        if (GetAsyncKeyState(VK_LBUTTON)) {
 
-            if (DelayForward == 0) {
-                ItemList[NumbCurrentItem].TickCount = GetTickCount64() + ItemList[NumbCurrentItem].Delay;
-                if (InAreaOfButton(ItemList[NumbCurrentItem]))*Pressed = true;
+            if (InAreaOfButton(ItemList[NumbCurrentItem]))*hovered = true;
+
+            if (Slider || GetTickCount64() > ItemList[NumbCurrentItem].TickCount) {
+                Slider = false;
+
+                if (DelayForward == 0) {
+                    ItemList[NumbCurrentItem].TickCount = GetTickCount64() + ItemList[NumbCurrentItem].Delay;
+                    if (InAreaOfButton(ItemList[NumbCurrentItem]))*Pressed = true;
+                    return;
+                }
+
+                for (size_t i = 0; i < ItemList.size(); i++)
+                {
+                    ItemList[i].TickCount = GetTickCount64() + ItemList[i].Delay + DelayForward;
+                }
+                DelayForward = 0;
                 return;
             }
-
-            for (size_t i = 0; i < ItemList.size(); i++)
-            {
-                ItemList[i].TickCount = GetTickCount64() + ItemList[i].Delay + DelayForward;
-            }
-            DelayForward = 0;
-            return;
-
         }
         else
         {
             if (InAreaOfButton(ItemList[NumbCurrentItem]))*hovered = true;
         }
+
     }
 
 
@@ -413,6 +452,7 @@ bool Overlay::Button(const char* Name) {
 
     if (!GetWindowRect(window, &window_metrics))
         return false;
+
 
     int sizex = 0;
 
@@ -433,10 +473,11 @@ bool Overlay::Button(const char* Name) {
     D2D_RECT_F RectButton;
     RectButton.left = WindowPos.x + 20;
     RectButton.top = WindowPos.y - WindowHeight + 50 + Spacing * NumbCurrentItem;
-    RectButton.right = WindowPos.x + sizex * sizeOther + 4;
+    RectButton.right = WindowPos.x + sizex * 10 + 4;
     RectButton.bottom = WindowPos.y - WindowHeight + 50 + Spacing * NumbCurrentItem + 25;
 
 
+    D2D1_ROUNDED_RECT RoundedRect = { RectButton, 5.0f, 5.0f };
 
 
     if (AddItem(RectButton, Name)) {
@@ -456,7 +497,7 @@ bool Overlay::Button(const char* Name) {
     ColorF.b = NeededFuncs::DefaultColRgba.B;
     ColorF.a = 255;*/
 
-    D2D1::ColorF ColBlack(D2D1::ColorF::Black);
+    D3DCOLORVALUE ColBlack = InnerColor;
 
 
     if (Hovered) {
@@ -467,11 +508,11 @@ bool Overlay::Button(const char* Name) {
 
     brush->SetColor(ColBlack);
 
-    tar->FillRectangle(RectButton, brush);
+    tar->FillRoundedRectangle(RoundedRect, brush);
 
 
     FormatOthers = true;
-    draw_text(RectButton.left + 5, RectButton.top, Name, D2D1::ColorF(D2D1::ColorF::White));
+    draw_text(RectButton.left + 10, RectButton.top, Name, D2D1::ColorF(D2D1::ColorF::White));
     FormatOthers = false;
 
     return Pressed;
@@ -515,10 +556,10 @@ bool Overlay::CheckBox(const char* Name, bool* Value) {
         return false;
     }
 
-    D2D1::ColorF ColBlack(0);
+    D3DCOLORVALUE ColBlack(0);
 
 
-    ColBlack = (D2D1::ColorF::Black);
+    ColBlack = Outercolor;
 
 
     if (Hovered) {
@@ -549,7 +590,7 @@ bool Overlay::CheckBox(const char* Name, bool* Value) {
 
 
     if (*Value) {
-        D2D1::ColorF FKD = (D2D1::ColorF::WhiteSmoke);
+        D3DCOLORVALUE FKD = InnerColor;
         D2D1_RECT_F CheckBoxD = RectButton;
         CheckBoxD.left += 5;
         CheckBoxD.top += 5;
@@ -570,6 +611,8 @@ const int SizeSlider = 120;
 
 bool Overlay::SliderFloat(const char* Name, float* Value, float min, float max) {
 
+    Slider = true;
+
     float Steps = (max / min) * 10;
     Steps /= SizeSlider;
 
@@ -584,8 +627,6 @@ bool Overlay::SliderFloat(const char* Name, float* Value, float min, float max) 
     sizex = strnlen_s(Name, 100);
 
     //sizex = (strnlen_s(Name, 100) * format->GetFontStretch());
-
-
 
     bool Pressed = false;
     bool Hovered = false;
@@ -613,13 +654,20 @@ bool Overlay::SliderFloat(const char* Name, float* Value, float min, float max) 
 
 
 
-    D2D1::ColorF Black(D2D1::ColorF::Black);
+    D3DCOLORVALUE Black = Outercolor;
+
+    if (Hovered) {
+        Black.r += 0.1;
+        Black.g += 0.1;
+        Black.b += 0.1;
+    }
 
 
     brush->SetColor(Black);
 
+    D2D1_ROUNDED_RECT RoumdedRect = { RectButton, 5.0f, 5.0f };
 
-    tar->FillRectangle(RectButton, brush);
+    tar->FillRoundedRectangle(RoumdedRect, brush);
 
 
 
@@ -630,23 +678,17 @@ bool Overlay::SliderFloat(const char* Name, float* Value, float min, float max) 
 
     std::string ValuenShit = Name; ValuenShit += ": " + std::to_string(*Value);
 
-    draw_text(RectButton.right + 20, (RectButton.bottom + Hight) - 10, ValuenShit.c_str(), D2D1::ColorF::White);
+    draw_text(RectButton.right + 20, (RectButton.bottom + Hight) - 10, ValuenShit.c_str(), D2D1::ColorF(D2D1::ColorF::White));
 
     FormatOthers = false;
 
-    D2D1_POINT_2F Point1 = { RectButton.left, RectButton.bottom + Hight };
+    //ButtonSize
+    RectButton.left += SliderPos + 5;
+    RectButton.right = RectButton.left - 10;
 
-    D2D1_POINT_2F Point2 = { RectButton.right, RectButton.bottom + Hight };
+    D2D1_ROUNDED_RECT Circle = { RectButton, 5.0f, 5.0f };
 
-    tar->DrawLine(Point1, Point2, brush);
-
-
-    RectButton.left += SliderPos;
-    RectButton.right = RectButton.left + 20;
-
-    D2D1_ROUNDED_RECT Circle = { RectButton, 20.0f, 20.0f };
-
-    tar->DrawRoundedRectangle(Circle, brush);
+    tar->FillRoundedRectangle(Circle, brush);
 
     return Pressed;
 }
@@ -657,6 +699,7 @@ void Overlay::Spacing() {
     D2D_RECT_F RectButton{ 0.0f, 0.0f, 0.0f, 0.0f };
 
     if (AddItem(RectButton, std::string("EMPTY" + std::to_string(SpacingAmount)).c_str(), true)) {
+
         return;
     }
 }
