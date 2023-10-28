@@ -39,8 +39,6 @@ int main()
     
 
 
-    const char* WaterMarkText = "ScuffedGUI Made by Senpai42";
-
     while (!overlay->Quit && !GetAsyncKeyState(VK_DELETE))
     {
         
@@ -56,7 +54,7 @@ int main()
                 if (overlay->Button("Exit  ")) {
                     overlay->Quit = true;
                 }
-                overlay->Checkbox("Checkbox", &TestBool); 
+                overlay->CheckBox("Checkbox", &TestBool); 
                 overlay->SliderFloat("SliderFloat", &FloatValue, 10.0f, 200.0f);
             }
               
