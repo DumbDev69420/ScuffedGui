@@ -15,7 +15,7 @@ namespace NeededFuncs {
     }
 
 
-    
+
 
     typedef struct
     {
@@ -38,7 +38,7 @@ namespace NeededFuncs {
 
 
     RGBA DefaultColRgba;
-    RGBA Rainbowshit = {0, 0,0,255};
+    RGBA Rainbowshit = { 0, 0,0,255 };
     D3DCOLORVALUE RainbowTextColor;
 
 
@@ -103,6 +103,9 @@ namespace NeededFuncs {
 bool Overlay::init()
 {
     window = FindWindowA("CEF-OSC-WIDGET", "NVIDIA GeForce Overlay");
+    
+
+    volatile HWND FFF = window;
 
     if (!window)
         return false;
@@ -162,10 +165,12 @@ bool Overlay::startup_d2d()
 
 
 Overlay* PtrToOverlay = 0x0;
+bool FirstRainbowUpdate = true;
 
 void Overlay::begin_scene()
 {
     tar->BeginDraw();
+    FirstRainbowUpdate = true;
 }
 
 void Overlay::end_scene()
@@ -182,7 +187,8 @@ void Overlay::clear_scene()
 
 bool FormatOthers = false;
 
-void Overlay::draw_text(int x, int y, const char* text, D3DCOLORVALUE color, ...)
+
+void Overlay::draw_text(int x, int y, const char* text, D3DCOLORVALUE color, bool Rainbow = false, ...)
 {
 
     char    buffer[4096];
@@ -208,8 +214,17 @@ void Overlay::draw_text(int x, int y, const char* text, D3DCOLORVALUE color, ...
 
     std::wstring Conv = NeededFuncs::stringToWideString(text);
 
-    brush->SetColor(color);
 
+    if(!Rainbow)
+    brush->SetColor(color);
+    else {
+        if (FirstRainbowUpdate) {
+            FirstRainbowUpdate = false;
+            NeededFuncs::Rainbowify(&NeededFuncs::Rainbowshit);
+            NeededFuncs::RainbowTextColor = NeededFuncs::ConvertRGBAToD3DCOLORVALUE(NeededFuncs::Rainbowshit);
+        }
+        brush->SetColor(NeededFuncs::RainbowTextColor);
+    }
 
 
 
@@ -232,6 +247,8 @@ bool InAreaOfButton(const Item& item);
 
 constexpr int WindowThickness = 5;
 
+
+
 void Overlay::DrawMenu() {
 
 
@@ -241,9 +258,6 @@ void Overlay::DrawMenu() {
         return;
 
     PtrToOverlay = this;
-
-   
-
 
 
     int x, y;
@@ -265,10 +279,6 @@ void Overlay::DrawMenu() {
     RoundedRectFF.rect.top -= WindowThickness;
     RoundedRectFF.rect.left += WindowThickness;
 
-
-
-    Item itemWindow;
-    itemWindow.Pos = Rect;
 
 
 
@@ -300,7 +310,7 @@ void Overlay::DrawMenu() {
 
 
     brush->SetColor(MenuInnerColor);
-    
+
     tar->FillRoundedRectangle(RoundedRect, brush);
 
 
@@ -318,12 +328,7 @@ void Overlay::DrawMenu() {
 
 void Overlay::DrawWaterMark() {
 
-    NeededFuncs::Rainbowify(&NeededFuncs::Rainbowshit);
-
-    NeededFuncs::RainbowTextColor = NeededFuncs::ConvertRGBAToD3DCOLORVALUE(NeededFuncs::Rainbowshit);
-
-
-    draw_text(10, 10, "ScuffedGUI Made by Senpai42", NeededFuncs::RainbowTextColor);
+    draw_text(10, 10, "ScuffedGUI Made by Senpai42", NeededFuncs::RainbowTextColor, true);
 }
 
 
@@ -356,7 +361,7 @@ bool Overlay::AddItem(D2D1_RECT_F Rect, const char* id, bool IgnoreList) {
         }
     }
 
-    
+
 
     if (IgnoreList)SpacingAmount++;
 
@@ -670,7 +675,6 @@ bool Overlay::SliderFloat(const char* Name, float* Value, float min, float max) 
     tar->FillRoundedRectangle(RoumdedRect, brush);
 
 
-
     float Hight = RectButton.top - RectButton.bottom;
     Hight /= 2;
 
@@ -686,8 +690,21 @@ bool Overlay::SliderFloat(const char* Name, float* Value, float min, float max) 
     RectButton.left += SliderPos + 5;
     RectButton.right = RectButton.left - 10;
 
-    D2D1_ROUNDED_RECT Circle = { RectButton, 5.0f, 5.0f };
 
+
+
+    D2D1_ROUNDED_RECT DD = { RectButton, 5.0f, 5.0f };
+    DD.rect.left = WindowPos.x + 20;
+    DD.rect.right += 10;
+
+
+    brush->SetColor(InnerColor);
+
+    tar->FillRoundedRectangle(DD, brush);
+
+    brush->SetColor(InnerColorSoft);
+
+    D2D1_ROUNDED_RECT Circle = { RectButton, 5.0f, 5.0f };
     tar->FillRoundedRectangle(Circle, brush);
 
     return Pressed;
@@ -702,4 +719,98 @@ void Overlay::Spacing() {
 
         return;
     }
+}
+
+
+DeVec2 WinSize = { 450, 290 };
+float PaddingX = 80;
+float PaddingY = 10;
+float LoadValue = 1.0f;
+float Fade = 255.0f;
+
+
+bool Overlay::LoadingScreen() {
+
+    begin_scene();
+    clear_scene();
+
+    float FadeCol = Fade / 255.0f;
+
+    D3DCOLORVALUE Col = MenuOuterColor;
+    Col.a = FadeCol;
+
+    brush->SetColor(Col);
+
+    //Outer Area
+    D2D_RECT_F RectButton{};
+    RectButton.left = (WindowSize.x / 2) - WinSize.x / 2;
+    RectButton.top = (WindowSize.y / 2) - WinSize.y / 2;
+    RectButton.right = (WindowSize.x / 2) + WinSize.x / 2;
+    RectButton.bottom = (WindowSize.y / 2) + WinSize.y / 2;
+
+    D2D1_ROUNDED_RECT Circle = { RectButton, 5.0f, 5.0f };
+
+    tar->FillRoundedRectangle(Circle, brush);
+
+
+
+    //Inner Bar
+    D2D_RECT_F RectButtonF = RectButton;
+
+    float FFF = 20;
+
+    RectButtonF.left += PaddingX;
+    RectButtonF.right -= PaddingX;
+    //RectButtonF.top = (RectButton.bottom + FFF) - (RectButton.top / 2 + PaddingY);
+    //RectButtonF.bottom = (RectButton.bottom + FFF) - (RectButton.top / 2 - PaddingY);
+    RectButtonF.top += ((RectButton.bottom - RectButton.top) / 2);
+    RectButtonF.bottom = RectButtonF.top - FFF;
+
+    D2D1_ROUNDED_RECT CircleF = { RectButtonF, 5.0f, 5.0f };
+
+
+    Col = Outercolor;
+    Col.a = FadeCol;
+
+    brush->SetColor(Col);
+
+    tar->FillRoundedRectangle(CircleF, brush);
+
+
+
+    D2D1_ROUNDED_RECT InnerBar = CircleF;
+
+
+    InnerBar.rect.right = CircleF.rect.left + ((CircleF.rect.right - CircleF.rect.left) * LoadValue / 100);
+
+
+    Col = InnerColor;
+    Col.a = FadeCol;
+    brush->SetColor(Col);
+
+    tar->FillRoundedRectangle(InnerBar, brush);
+
+    FormatOthers = true;
+    if (LoadValue < 100) {
+        LoadValue += 0.125f;
+
+        draw_text(RectButtonF.left, RectButtonF.top - 60, std::string("Loading: " + std::to_string((int)LoadValue) + "%").c_str(), D2D1::ColorF(D2D1::ColorF::White, FadeCol));
+    }
+    else
+    {
+
+        draw_text(RectButtonF.left, RectButtonF.top - 60, std::string("Done!: " + std::to_string((int)LoadValue) + "%").c_str(), D2D1::ColorF(D2D1::ColorF::White, FadeCol));
+        FormatOthers = false;
+        end_scene();
+
+
+        if (Fade < 5.0f) return true;
+
+        Fade -= 8.0f;
+    }
+    FormatOthers = false;
+
+    end_scene();
+
+    return false;
 }
