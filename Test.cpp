@@ -36,8 +36,18 @@ int main()
     //Example stuff (doesnt need to be included just to show how to use the stuff)
     bool TestBool = false;
     float FloatValue = 10.0f;
-    
 
+    HWND WindowHandle = GetDesktopWindow();
+
+    RECT winRect;
+
+    GetWindowRect(WindowHandle, &winRect);
+
+    overlay->WindowSize.x = winRect.right;
+    overlay->WindowSize.y = winRect.bottom;
+
+
+     while (overlay->LoadingScreen() == false);
 
     while (!overlay->Quit && !GetAsyncKeyState(VK_DELETE))
     {
