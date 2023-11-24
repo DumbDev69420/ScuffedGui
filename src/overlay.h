@@ -16,7 +16,9 @@ public:
     D2D_RECT_F Pos;
     DWORD Delay = 200;
     DWORD TickCount = 0;
+    int WidthId = 0;
     class Overlay* OverlayPtr = 0x0;
+
 };
 
 
@@ -35,7 +37,7 @@ public:
     int Menu = 0;
     int SpacingAmount = 0;
     tagPOINT MousePosF = { 0, 0 };
-
+    DeVec2 WindowSize;
 
     //Colors
 
@@ -49,6 +51,11 @@ public:
     //Colors Button
     D3DCOLORVALUE InnerColor = { 54 / 255.0f, 119 / 255.0f, 175 / 255.0f, 255 / 255.0f };
     D3DCOLORVALUE Outercolor = { 38 / 255.0f, 54 / 255.0f, 88 / 255.0f, 255 / 255.0f };
+
+
+
+
+    D3DCOLORVALUE InnerColorSoft = { 157 / 255.0f, 193 / 255.0f, 225 / 255.0f, 255 / 255.0f };
     
 
 private:
@@ -111,7 +118,7 @@ public:
     void clear_scene();
 
     /* create helper functions here */
-    void draw_text(int x, int y, const char* text, D3DCOLORVALUE color, ...);
+    void draw_text(int x, int y, const char* text, D3DCOLORVALUE color, bool Rainbow, ...);
     void DrawMenu();
     bool AddItem(D2D1_RECT_F Rect, const char* id, bool IgnoreList = false);
     bool Button(const char* Name);
@@ -120,5 +127,6 @@ public:
     bool SliderFloat(const char* Name, float* Value, float min, float max);
     void Spacing();
     void DrawWaterMark();
+    bool LoadingScreen();
     //LPMSG GetMessagesC();
 };
